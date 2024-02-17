@@ -1,0 +1,77 @@
+<div class="wrapper overflow-auto">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-6">
+        <div class="table-responsive">
+          <table class="table mx-auto text-center">
+            <tbody>
+              <tr>
+                <td colspan="2">
+                 <br>
+                 <h5>Mirësevini në faqen tonë</h5>
+                 <br>
+                </td>
+              </tr>
+              <tr>
+                <td><label class="label">Emri</label></td>
+                <td>
+                 <input type="text" class="input-size" [(ngModel)]="name" required (focus)="nameFocused = true" (blur)="nameFocused = false" (ngModelChange)="checkValidity()">
+                 <p *ngIf="nameFocused && !name">Vendosni emrin tuaj</p>
+                 <p *ngIf="nameInvalidFormat && name">{{ nameMessage }}</p>
+                 <p *ngIf="nameInvalidFormat && name">{{ nameInfoMessage }}</p>
+                </td>
+              </tr>
+              <tr>
+                <td><label class="label">Username</label></td>
+                <td>
+                 <input type="text" class="input-size" [(ngModel)]="username" required (focus)="usernameFocused = true" (blur)="usernameFocused = false" (ngModelChange)="checkValidity()">
+                 <p *ngIf="usernameFocused && !username">Vendosni username-in tuaj</p>
+                 <p *ngIf="usernameInvalidFormat && username">{{ usernameMessage }}</p>
+                 <p *ngIf="usernameInvalidFormat && username">{{ usernameInfoMessage }}</p>
+                </td>
+              </tr>
+              <tr>
+                <td><label class="label">Email</label></td>
+                <td>
+                 <input type="email" class="input-size" [(ngModel)]="email" required (focus)="emailFocused = true" (blur)="emailFocused = false" (ngModelChange)="checkValidity()">
+                 <p *ngIf="emailFocused && !email">Vendosni email-in tuaj</p>
+                 <p *ngIf="emailInvalidFormat && email">{{ emailMessage }}</p>
+                </td>
+              </tr>
+              <tr>
+                <td><label class="label">Fjalëkalimi</label></td>
+                <td>
+                  <div class="input-container">
+                    <input [type]="showPassword ? 'text' : 'password'" class="input-size" [(ngModel)]="password" required (focus)="passwordFocused = true" (blur)="passwordFocused = false" (ngModelChange)="checkValidity()">
+                    <img *ngIf="password" (click)="togglePassword()" [src]="showPassword ? 'https://imgs.search.brave.com/WoRh2RsvsZ46Q46sbD_xIimuTUal8mnzshGoF8AInh4/rs:fit:500:0:0/g:ce/aHR0cHM6Ly9jZG40/Lmljb25maW5kZXIu/Y29tL2RhdGEvaWNv/bnMvaW9uaWNvbnMv/NTEyL2ljb24taW9z/Ny1leWUtMTI4LnBu/Zw' : 'https://imgs.search.brave.com/10hBMlfRA4Jdgn_s3rSTMUslJdlB9sW2cTDKt539s1M/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9jZG4x/Lmljb25maW5kZXIu/Y29tL2RhdGEvaWNv/bnMvc2xhc2hlZC80/MDAvRXllX09mZi12/aXNpb25fbG9zcy1l/eWVfc2xhc2gtZXll/LWJsaW5kLXVuc2Vl/aW5nLXZpc2liaWxp/dHktYWNjZXNzaWJp/bGl0eS1pbnZpc2li/bGUtaGlkZGVuLXdl/Yl91aS11aS1zbGFz/aGVkLTUxMi5wbmc'">
+                   </div>                                     
+                 <p *ngIf="passwordFocused && !password">Vendosni fjalëkalimin tuaj</p>
+                 <p *ngIf="passwordInvalidFormat && password">{{ passwordErrorMessage }}</p>
+                 <p *ngIf="passwordInvalidFormat && password">{{ passwordInfoMessage }} </p>
+              </tr>
+              <tr>
+                <td><label class="label">Mosha</label></td>
+                <td>
+                 <input type="number" class="input-size" [(ngModel)]="age" required (focus)="ageFocused = true" (blur)="ageFocused = false" (ngModelChange)="checkValidity()">
+                 <p *ngIf="ageFocused && !age">Vendosni moshën tuaj</p>
+                 <p *ngIf="ageInvalidFormat && age">{{ ageMessage }}</p>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                 <br>
+                 <p *ngIf="validationMessage">{{ validationMessage }}</p>
+                 <button class="btn btn-primary" (click)="postUser()">Sign-up</button>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2"><p>Keni një llogari: <a href="/log-in">Log-in</a></p></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+ </div>
+ 

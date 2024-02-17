@@ -1,0 +1,84 @@
+<div class="wrapper">
+<app-navbar></app-navbar>
+<br><br>
+
+<div *ngIf="customers.length === 0">
+  <h2>Ju nuk keni krijuar ende asnjë klient!</h2>
+</div>
+
+<div class="table-responsive">
+<table *ngIf="customers.length > 0">
+  <thead>
+    <tr>
+      <th>Kodi i klientit</th>
+      <th>Përshkrimi i klientit</th>
+      <th>Aktiv</th>
+      <th>Veprimet</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let customer of customers">
+      <td>{{ customer.customerCode }}</td>
+      <td>{{ customer.customerDescription }}</td>
+      <td>{{ customer.active }}</td>
+      <td>
+        <button class="btn btn-primary btn-block" (click)="toggleUpdateForm(customer)">Modifiko</button>
+        <button class="btn btn-primary btn-block" (click)="deleteCustomer(customer.customerCode)">Fshi</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<br>
+<div class="form-container">
+  <form class="styled-form" *ngIf="showUpdateForm" (ngSubmit)="updateCustomer(updateCustomerForm)">
+    <label for="updateCustomerCode">Kodi i klientit:</label>
+    <input id="updateCustomerCode" [(ngModel)]="updateCustomerForm.customerCode" name="customerCode" required #customerCode="ngModel" (focus)="customerCodeFocused = true" (blur)="customerCodeFocused = false" (input)="validateCustomerData(updateCustomerForm)">
+    <p *ngIf="customerCodeFocused && !updateCustomerForm.customerCode">Shtoni kodin e klientit</p>
+    <p *ngIf="updateCustomerForm.customerCode && updateCustomerForm.customerCodeInvalidFormat">{{ validateCustomerData(updateCustomerForm).customerCodeMessage }}</p>
+    
+    <label for="updateCustomerDescription">Përshkrimi i klientit:</label>
+    <input id="updateCustomerDescription" [(ngModel)]="updateCustomerForm.customerDescription" name="customerDescription" required #customerDescription="ngModel" (focus)="customerDescriptionFocused = true" (blur)="customerDescriptionFocused = false" (input)="validateCustomerData(updateCustomerForm)">
+    <p *ngIf="customerDescriptionFocused && !updateCustomerForm.customerDescription">Shtoni përshkrimin e klientit</p>
+    <p *ngIf="updateCustomerForm.customerDescription && updateCustomerForm.customerDescriptionInvalidFormat">{{ validateCustomerData(updateCustomerForm).customerDescriptionMessage }}</p>
+    <p *ngIf="updateCustomerForm.customerDescription && updateCustomerForm.customerDescriptionInvalidFormat">{{ validateCustomerData(updateCustomerForm).customerInfoMessage }}</p>
+    <div class="checkbox-container">
+     <label for="updateActive">Aktiv:</label>
+     <input type="checkbox" id="updateActive" [(ngModel)]="updateCustomerForm.active" name="active">
+    </div>
+    <p *ngIf="customerValidationMessage">
+      {{ customerValidationMessage }}
+    </p>
+    <button class="btn btn-primary btn-block" type="submit">Modifiko klientin</button>
+   </form>
+   
+   <br>
+   
+   <button class="btn btn-primary add-button btn-block" (click)="toggleAddForm()">Shto klient të ri</button>
+   
+   <form class="styled-form" *ngIf="showAddForm" (ngSubmit)="postCustomer();">
+    <label for="customerCode">Kodi i klientit:</label>
+    <input id="customerCode" [(ngModel)]="newCustomer.customerCode" name="customerCode" required #customerCode="ngModel" (focus)="customerCodeFocused = true" (blur)="customerCodeFocused = false" (input)="validateCustomerData(newCustomer)">
+    <p *ngIf="customerCodeFocused && !newCustomer.customerCode">Shtoni kodin e klientit</p>
+    <p *ngIf="newCustomer.customerCode && newCustomer.customerCodeInvalidFormat">{{ validateCustomerData(newCustomer).customerCodeMessage }}</p>
+    
+    <label for="customerDescription">Përshkrimi i klientit:</label>
+    <input id="customerDescription" [(ngModel)]="newCustomer.customerDescription" name="customerDescription" required #customerDescription="ngModel" (focus)="customerDescriptionFocused = true" (blur)="customerDescriptionFocused = false" (input)="validateCustomerData(newCustomer)">
+    <p *ngIf="customerDescriptionFocused && !newCustomer.customerDescription">Shtoni përshkrimin e klientit</p>
+    <p *ngIf="newCustomer.customerDescription && newCustomer.customerDescriptionInvalidFormat">{{ validateCustomerData(newCustomer).customerDescriptionMessage }}</p>
+    <p *ngIf="newCustomer.customerDescription && newCustomer.customerDescriptionInvalidFormat">{{ validateCustomerData(newCustomer).customerInfoMessage }}</p>    
+   
+    <div class="checkbox-container">
+    <label for="active">Aktiv:</label>
+     <input type="checkbox" id="active" [(ngModel)]="newCustomer.active" name="active">
+    </div>
+    <p *ngIf="customerValidationMessage">
+      {{ customerValidationMessage }}
+    </p>
+    <button class="btn btn-primary btn-block" type="submit">Shto klient</button>
+    <br>
+   </form>
+   <br>   
+</div>
+</div>

@@ -1,0 +1,145 @@
+<div class="wrapper">
+<app-navbar></app-navbar>
+<br>
+
+<div *ngIf="documents.length === 0">
+  <h2>Ju nuk keni krijuar ende asnjë dokument!</h2>
+</div>
+
+<div class="table-responsive" *ngIf="documents.length > 0">
+  <p style="margin-left: 5%;" >* Për të parë vlerën e plotë të longtitude ose latitude ju lutemi vendosni mausin në ikonën '<img src="https://imgs.search.brave.com/krc7r-zo3At0DGt9aIDeewYFdNPE1NLO-A0d20wIUaw/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9pY29u/cy52ZXJ5aWNvbi5j/b20vcG5nLzEyOC9i/dXNpbmVzcy9saXR0/bGUtZmFrZS1icm90/aGVyXy1sYWJlbF8t/aWNvbjAxNy9tb3Jl/LTQ4OC5wbmc" style="width: 20px; height: 20px;">'</p>
+<table>
+  <thead>
+    <tr>
+      <th>Emri i dokumentit</th>
+      <th>Vlera</th>
+      <th>Kodi i klientit</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+      <th>Veprimet</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let document of documents">
+      <td>{{ document.name }}</td>
+      <td>{{ document.value }}</td>
+      <td>{{ document.customerCode }}</td>
+      <td>
+        <ng-container *ngIf="(document.latitude.toString().slice(document.latitude.toString().indexOf('.')+1).length > 2); else normalLatitude">
+            {{ document.latitude | number:'1.2-2'}}...
+            <img src="https://imgs.search.brave.com/krc7r-zo3At0DGt9aIDeewYFdNPE1NLO-A0d20wIUaw/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9pY29u/cy52ZXJ5aWNvbi5j/b20vcG5nLzEyOC9i/dXNpbmVzcy9saXR0/bGUtZmFrZS1icm90/aGVyXy1sYWJlbF8t/aWNvbjAxNy9tb3Jl/LTQ4OC5wbmc" title="{{ document.latitude }}" style="width: 20px; height: 20px;">
+        </ng-container>
+        <ng-template #normalLatitude>{{ document.latitude }}</ng-template>
+      </td>
+      <td>
+        <ng-container *ngIf="(document.longitude.toString().slice(document.longitude.toString().indexOf('.')+1).length > 2); else normalLongitude">
+            {{ document.longitude | number:'1.2-2'}}...
+            <img src="https://imgs.search.brave.com/krc7r-zo3At0DGt9aIDeewYFdNPE1NLO-A0d20wIUaw/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9pY29u/cy52ZXJ5aWNvbi5j/b20vcG5nLzEyOC9i/dXNpbmVzcy9saXR0/bGUtZmFrZS1icm90/aGVyXy1sYWJlbF8t/aWNvbjAxNy9tb3Jl/LTQ4OC5wbmc" title="{{ document.longitude }}" style="width: 20px; height: 20px;">
+        </ng-container>
+        <ng-template #normalLongitude>{{ document.longitude }}</ng-template>
+      </td>
+      <td>
+        <button class="btn btn-primary" (click)="toggleUpdateForm(document)">Modifiko</button>
+        <button class="btn btn-primary" (click)="deleteDocument(document.id)">Fshi</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="form-container">
+  <form class="styled-form" *ngIf="showUpdateForm" (ngSubmit)="updateDocument()">
+
+    <label for="updateDocumentName">Emri i dokumentit:</label>
+    <input id="updateDocumentName" [(ngModel)]="updateDocumentForm.name" name="name" required #updateDocumentName="ngModel" (focus)="updateDocumentNameFocused = true" (blur)="updateDocumentNameFocused = false" (input)="validateDocumentData(updateDocumentForm)"><br>
+    <p *ngIf="updateDocumentNameFocused && !updateDocumentForm.name">Shtoni emrin e dokumentit</p>
+    <p *ngIf="updateDocumentForm.name && updateDocumentForm.documentNameInvalidFormat">{{ validateDocumentData(updateDocumentForm).documentNameMessage }}</p>
+    <p *ngIf="updateDocumentForm.name && updateDocumentForm.documentNameInvalidFormat">{{ validateDocumentData(updateDocumentForm).documentInfoMessage }}</p>
+    <br>
+   
+    <label for="updateDocumentValue">Vlera:</label>
+    <input id="updateDocumentValue" [(ngModel)]="updateDocumentForm.value" name="value" required #updateDocumentValue="ngModel" (focus)="updateDocumentValueFocused = true" (blur)="updateDocumentValueFocused = false" (input)="validateDocumentData(updateDocumentForm)"><br>
+    <p *ngIf="updateDocumentValueFocused && !updateDocumentForm.value">Shtoni vleren e dokumentit</p>
+    <p *ngIf="updateDocumentForm.value && updateDocumentForm.documentValueInvalidFormat">{{ validateDocumentData(updateDocumentForm).documentValueMessage }}</p>
+    <br>
+   
+    <label for="updateCustomerCode">Kodi i klientit:</label>
+    <p>Perzgjidhni kodin e klientit</p>
+    <select id="updateCustomerCode" [(ngModel)]="updateDocumentForm.customerCode" name="customerCode" required #updateCustomerCode="ngModel">
+      <option *ngFor="let customer of userCustomers" [value]="customer.customerCode">{{customer.customerCode}}</option>
+    </select>
+    <br><br>
+   
+    <label>Modifikoni Latitude and Longitude:</label>
+    <p>Ju mund të levizni hartën sipas dëshirës dhe të vendosni lokacionin e preferuar. Vlerat e Latitude dhe Longtitude do të rregjistrohen pasi të këni klikuar lokacionin tuaj</p>
+    <div #updateMapElement class="map"></div>
+    <br>
+   
+    <div class="flex-container">
+      <label for="updateLatitude">Latitude:</label>
+      <input id="updateLatitude" [(ngModel)]="updateDocumentForm.latitude" name="latitude" required readonly #updateLatitude="ngModel" (focus)="updateLatitudeFocused = true" (blur)="updateLatitudeFocused = false">
+      <p *ngIf="updateLatitudeFocused">Ky input shërben vetëm, për të shfaqur vlerën e Latitude. Për të ndërruar vlerën ju lutemi klikoni në hartë</p>
+    </div>
+    <br>
+   
+    <div class="flex-container">
+      <label for="updateLongitude">Longitude:</label>
+      <input id="updateLongitude" [(ngModel)]="updateDocumentForm.longitude" name="longitude" required readonly #updateLongitude="ngModel" (focus)="updateLongitudeFocused = true" (blur)="updateLongitudeFocused = false">
+      <p *ngIf="updateLongitudeFocused">Ky input shërben vetëm, për të shfaqur vlerën e Longtitude. Për të ndërruar vlerën ju lutemi klikoni në hartë</p>
+    </div>
+    <br><br>
+    <p *ngIf="documentValidationMessage">{{ documentValidationMessage }}</p> 
+    <button class="btn btn-primary" type="submit">Modifiko dokumentin</button>
+   
+   </form>
+   
+
+<br>
+
+<button class="btn btn-primary add-button" (click)="toggleAddForm()">Shto dokument të ri</button>
+
+<form class="styled-form" *ngIf="showAddForm" (ngSubmit)="postDocument()">
+ 
+  <label for="documentName">Emri i dokumentit:</label>
+  <input id="documentName" [(ngModel)]="newDocument.name" name="name" required #documentName="ngModel" 
+  (focus)="documentNameFocused = true" (blur)="documentNameFocused = false" 
+  (input)="validateDocumentData(newDocument)" ><br>
+  <p *ngIf="documentNameFocused && !newDocument.name">Shtoni emrin e dokumentit</p>
+  <p *ngIf="newDocument.name && newDocument.documentNameInvalidFormat">{{ validateDocumentData(newDocument).documentNameMessage }}</p>
+  <p *ngIf="newDocument.name && newDocument.documentNameInvalidFormat">{{ validateDocumentData(newDocument).documentInfoMessage }}</p>
+  <br>
+  <label for="documentValue">Vlera:</label>
+  <input id="documentValue" [(ngModel)]="newDocument.value" name="value" required #documentValue="ngModel" 
+  (focus)="documentValueFocused = true" (blur)="documentValueFocused = false" 
+  (input)="validateDocumentData(newDocument)"><br>
+  <p *ngIf="documentValueFocused && !newDocument.value">Shtoni vlerën e dokumentit</p>
+  <p *ngIf="newDocument.value && newDocument.documentValueInvalidFormat">{{ validateDocumentData(newDocument).documentValueMessage }}</p>
+  <br>
+  <label for="customerCode">Kodi i klientit:</label>
+  <p>Përzgjidhni kodin e klientit</p>
+  <select id="customerCode" [(ngModel)]="newDocument.customerCode" name="customerCode" required #customerCode="ngModel">
+    <option *ngFor="let customer of userCustomers" [value]="customer.customerCode">{{customer.customerCode}}</option>
+  </select>
+ 
+  <br><br>
+  <label>Shtoni Latitude dhe Longitude:</label>
+  <p>Ju mund të levizni hartën sipas dëshirës dhe të vendosni lokacionin e preferuar. Vlerat e Latitude dhe Longtitude do të rregjistrohen pasi të këni klikuar lokacionin tuaj</p>
+  <div #addMapElement class="map"></div>
+  <br>
+  <div class="flex-container">
+    <label for="newLatitude">Latitude:</label>
+    <input id="newLatitude" [(ngModel)]="newDocument.latitude" name="latitude" required readonly #newLatitude="ngModel" (focus)="latitudeFocused = true" (blur)="latitudeFocused = false">
+    <p *ngIf="latitudeFocused">Ky input shërben vetëm, për të shfaqur vlerën e Latitude. Për të ndërruar vlerën ju lutemi klikoni në hartë</p>
+  </div>
+  <br>
+  <div class="flex-container">
+    <label for="newLongitude">Longitude:</label>
+    <input id="newLongitude" [(ngModel)]="newDocument.longitude" name="longitude" required readonly #newLongitude="ngModel" (focus)="longitudeFocused = true" (blur)="longitudeFocused = false">
+    <p *ngIf="longitudeFocused">Ky input shërben vetëm, për të shfaqur vlerën e Longtitude Për të ndërruar vlerën ju lutemi klikoni në hartë</p>
+  </div>
+  <br><br>
+  <p *ngIf="documentValidationMessage">{{ documentValidationMessage }}</p>
+  <button class="btn btn-primary" type="submit">Shto dokument</button>
+</form>
+<br>
+</div>
+</div>

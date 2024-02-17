@@ -1,0 +1,18 @@
+<div class="wrapper">
+<app-navbar></app-navbar>
+<br>
+<div style="text-align: center;">
+ <h2 *ngIf="documents.length === 0">Ju nuk keni asnjë dokument për të shfaqur!</h2>
+ <h2 *ngIf="documents.length > 0">Këtu do të gjeni vendndodhjet e dokumenteve tuaja, {{loggedInUser.name}}</h2>
+ <form>
+ <div #mapContainer style="width: 1000px; height: 500px; margin: auto;"></div>
+ <div id="info-window">
+   <div id="info-window-name"></div>
+   <div id="info-window-value"></div>
+   <div id="info-window-customerDescription"></div> 
+   <div id="info-window-customerCode"></div>
+   <div id="info-window-customerActiveStatus"></div>
+  </div>
+ </form>
+</div>
+</div>

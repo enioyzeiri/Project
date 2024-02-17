@@ -1,0 +1,4 @@
+{
+    "/customers/:customerCode": "/customers?id=:customerCode"
+  }
+  
